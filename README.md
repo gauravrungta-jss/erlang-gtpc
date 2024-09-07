@@ -1,8 +1,15 @@
-# erlang-gtpc
-gtpc in erlang
+gtplib
+======
+
+GTPC code using erlang
 
 BUILDING
+--------
+
 Using rebar:
-# rebar3 get-deps
-# rebar3 compile
+
+    # rebar3 get-deps
+    
+    # rebar3 compile
+
 
