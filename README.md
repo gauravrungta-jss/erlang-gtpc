@@ -5,6 +5,10 @@ GTPC code using erlang
 
 BUILDING
 --------
+Install erlang :
+
+    # brew install erlang
+    
 Install rebar3 if not available:
 
     # brew install rebar3
