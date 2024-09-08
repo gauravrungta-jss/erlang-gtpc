@@ -58,7 +58,7 @@ loop(Socket) ->
 
 %% Function to send Create Session Response
 send_create_session_response(Socket, Ip, Port) ->
-   Bin =  hexstr2bin("48210067100100020000020002000200"
+    Bin =  hexstr2bin("48210067100100020000000002000200"
                      "10004F000500010C000002570009008B"
                      "11000003C0A80A015700090187700100"
                      "02C0A81E035D002D0049000100050200"
