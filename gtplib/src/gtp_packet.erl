@@ -17,6 +17,7 @@
 -export([encode_plmn_id/1]).
 -export([decode_v2_user_location_information/2, decode_v1_rai/2]).
 -export([encode_v2_user_location_information/1, encode_v1_rai/1]).
+-export([decode_header/1]).
 
 -compile([{parse_transform, cut}]).
 -compile({inline,[decode_tbcd/1, decode_fqdn/1,
