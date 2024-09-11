@@ -16,6 +16,7 @@ start() ->
     {ok, Socket} = gen_udp:open(Port, [binary, {active, true}, {ip, Address}]),
 
     %% Start the loop to handle incoming requests
+    io:format("Starting incoming request loop ~n"),
     loop(Socket).
 
 %% Insert in teid table. It will replace if entry already exist
@@ -39,7 +40,7 @@ loop(Socket) ->
         {udp, Socket, Ip, Port, Data} ->
             %% Decode and process incoming Gtp Msg
             DecodedMsg = gtp_packet:decode(Data),
-            io:format("Decoded Request Message: ~p~n", [DecodedMsg]),
+            %%io:format("Decoded Request Message: ~p~n", [DecodedMsg]),
             process_request(Socket, Ip, Port, DecodedMsg),
 
             %% Continue listening for more messages
@@ -66,17 +67,17 @@ process_request(Socket, Ip, Port, DecodedMsg) ->
 process_create_session_request(Socket, Ip, Port, DecodedMsg) ->
     IEsMap = DecodedMsg#gtp.ie,
     Seq = DecodedMsg#gtp.seq_no,
-    io:format("CSReq Seq: ~p~n", [Seq]),
+    %%io:format("CSReq Seq: ~p~n", [Seq]),
 
     MmeCtrlKey = {v2_fully_qualified_tunnel_endpoint_identifier, 0},
     MmeCtrlValue = maps:get(MmeCtrlKey, IEsMap),
     MmeTeid = MmeCtrlValue#v2_fully_qualified_tunnel_endpoint_identifier.key,
-    io:format("CSReq MME TEID: ~p~n", [MmeTeid]),
+    %%io:format("CSReq MME TEID: ~p~n", [MmeTeid]),
 
     PaaKey = {v2_pdn_address_allocation,0},
     PaaValue = maps:get(PaaKey, IEsMap),
     PaaType = PaaValue#v2_pdn_address_allocation.type,
-    io:format("CSReq PaaType: ~p~n", [PaaType]),
+    %%io:format("CSReq PaaType: ~p~n", [PaaType]),
 
     %% Get SGW Cntrl Teid and update teid_table with teid_counter and sgw_ctrl_teid->mme_ctrl_teid mapping
     SgwCtrlTeid = get_value(teid_counter),
@@ -103,9 +104,9 @@ process_create_session_request(Socket, Ip, Port, DecodedMsg) ->
 %% Function to Process Modify Bearer Request Msg
 process_modify_bearer_request(Socket, Ip, Port, DecodedMsg) ->
     Seq = DecodedMsg#gtp.seq_no,
-    io:format("MBReq Seq: ~p~n", [Seq]),
+    %%io:format("MBReq Seq: ~p~n", [Seq]),
     SgwTeid = DecodedMsg#gtp.tei,
-    io:format("MBReq Teid: ~p~n", [SgwTeid]),
+    %%io:format("MBReq Teid: ~p~n", [SgwTeid]),
 
     %% Get MBRsp Teid from teid_table
     RspTeid = get_value(SgwTeid),
@@ -123,15 +124,15 @@ process_modify_bearer_request(Socket, Ip, Port, DecodedMsg) ->
 %% Function to Process Delete Session Request Msg
 process_delete_session_request(Socket, Ip, Port, DecodedMsg) ->
     Seq = DecodedMsg#gtp.seq_no,
-    io:format("DSReq Seq: ~p~n", [Seq]),
+    %io:format("DSReq Seq: ~p~n", [Seq]),
     SgwTeid = DecodedMsg#gtp.tei,
-    io:format("DSReq Teid: ~p~n", [SgwTeid]),
+    %io:format("DSReq Teid: ~p~n", [SgwTeid]),
 
     %% Get DSRsp Teid from teid_table
     RspTeid = get_value(SgwTeid),
 
     %% Delete Teid mapping from table
-    io:format("Deleting Teid mapping for key: ~p~n", [SgwTeid]),
+    %%io:format("Deleting Teid mapping for key: ~p~n", [SgwTeid]),
     delete_value(SgwTeid),
 
     RspIEs = [#v2_cause{v2_cause = request_accepted},
@@ -145,9 +146,9 @@ process_delete_session_request(Socket, Ip, Port, DecodedMsg) ->
 
 %% Function to send Response Msg
 send_response(Socket, Ip, Port, GtpMsg) ->
-    io:format("Encoding : ~p~n", [GtpMsg#gtp.type]),
+    %%io:format("Encoding : ~p~n", [GtpMsg#gtp.type]),
     EncodedBytes =gtp_packet:encode(GtpMsg),
-    io:format("Sending Encoded Response Message: ~p~n", [EncodedBytes]),
+    %%io:format("Sending Encoded Response Message: ~p~n", [EncodedBytes]),
 
     %% Send Response message back to the sender
     gen_udp:send(Socket, Ip, Port, EncodedBytes).
